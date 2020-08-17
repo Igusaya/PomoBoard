@@ -10,16 +10,43 @@ const maxBreakTime = 8;
 const aram = new Audio('../../tin2.mp3');
 const phaseType = ['WORK', 'BREAK', 'REST', 'BUFFER_REST', 'STOP'];
 
+const isNewNotificationSupported = () => {
+  if (!window.Notification === !Notification.requestPermission()) return false;
+  if (Notification.permission === 'granted') throw new Error('');
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const e = new Notification('');
+  } catch (e) {
+    if (e.name === 'TypeError') return false;
+  }
+
+  return true;
+};
+
 const useTimer = (): [number, () => void, () => void, () => void, string] => {
   const [timerId, setTimerId] = useState(0);
   const [cycleIndex, setCycleIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(cycle[cycleIndex]);
   const [phase, setPhase] = useState(phaseType[4]);
+  const [notificationSupportFlg, setNotificationSupportFlg] = useState(false);
 
   const refCycleIndex = useRef(cycleIndex);
 
+  const showNotification = (message: string) => {
+    if (notificationSupportFlg) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const n = new Notification(message);
+    }
+  };
+
   useEffect(() => {
-    Notification.requestPermission();
+    if (window.Notification && Notification.permission === 'granted') {
+      setNotificationSupportFlg(true);
+    } else if (isNewNotificationSupported()) {
+      Notification.requestPermission().then(result => {
+        if (result === 'granted') setNotificationSupportFlg(true);
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -33,26 +60,22 @@ const useTimer = (): [number, () => void, () => void, () => void, string] => {
 
         aram.play();
         if (workTimes.includes((refCycleIndex.current + 1) % cycle.length)) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const n = new Notification('25分間、作業を行いましょう');
+          showNotification('25分間、作業を行いましょう');
           setPhase(phaseType[0]);
         } else if (
           minBreakTime ===
           (refCycleIndex.current + 1) % cycle.length
         ) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const n = new Notification('15分から30分間の休憩に入りましょう');
+          showNotification('15分から30分間の休憩に入りましょう');
           setPhase(phaseType[2]);
         } else if (
           maxBreakTime ===
           (refCycleIndex.current + 1) % cycle.length
         ) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const n = new Notification('今から15分後までに作業を再開しましょう');
+          showNotification('今から15分後までに作業を再開しましょう');
           setPhase(phaseType[3]);
         } else {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const n = new Notification('5分間の休憩を取りましょう');
+          showNotification('5分間の休憩を取りましょう');
           setPhase(phaseType[1]);
         }
 
