@@ -81,6 +81,9 @@ const useTimer = (): [number, () => void, () => void, () => void, string] => {
 
         return cycle[(refCycleIndex.current + 1) % cycle.length];
       }
+      document.title = `${`00${Math.floor((prevTime - 1) / 60)}`.slice(
+        -2,
+      )}:${`00${(prevTime - 1) % 60}`.slice(-2)}`;
 
       return prevTime - 1;
     });

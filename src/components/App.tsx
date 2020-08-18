@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { Button, Card, Icon, Statistic, ButtonGroup } from 'semantic-ui-react';
-import { Helmet } from 'react-helmet';
 
 import './App.css';
 
@@ -20,12 +19,6 @@ const AppComponent: FC<AppProps> = ({
   phase,
 }) => (
   <>
-    <Helmet>
-      <title>
-        Pomo Board α [ {`00${Math.floor(timeLeft / 60)}`.slice(-2)}:
-        {`00${timeLeft % 60}`.slice(-2)} ]
-      </title>
-    </Helmet>
     <div className="container">
       <header>
         <h1>ポモドーロ タイマー</h1>
