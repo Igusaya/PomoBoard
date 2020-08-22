@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
     "@types/jest": "24.0.24",
     "@types/node": "12.12.21",
     "@types/react": "16.9.17",
@@ -14,8 +16,6 @@
     "react-dom": "^16.8.5",
     "react-helmet": "^6.1.0",
     "react-scripts": "3.3.0",
-    "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.88.2",
     "typescript": "3.7.4"
   },
   "scripts": {
