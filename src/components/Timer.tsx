@@ -12,9 +12,7 @@ import {
 } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 
-import './App.css';
-
-interface AppProps {
+interface TimerProps {
   timeLeft: number;
   reset: () => void;
   start: () => void;
@@ -29,7 +27,7 @@ const useStyles = makeStyles({
   },
 });
 
-const TimerComponent: FC<AppProps> = ({
+const TimerComponent: FC<TimerProps> = ({
   timeLeft,
   reset,
   start,
@@ -50,7 +48,7 @@ const TimerComponent: FC<AppProps> = ({
               </IconButton>
             }
             title="Pomo Timer"
-            subheader={`> ${phase}`}
+            subheader={`phase:  ${phase}`}
           />
           <CardContent>
             <Typography variant="h2" component="p" align="center">

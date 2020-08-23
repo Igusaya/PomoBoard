@@ -2,13 +2,24 @@ import React, { FC, useState, useRef, useEffect } from 'react';
 
 import TimerComponent from '../components/Timer';
 
-const cycle = [1500, 300, 1500, 300, 1500, 300, 1500, 900, 900];
-// const cycle = [25, 5, 25, 5, 25, 5, 25, 5, 15, 15];
-const workTimes = [0, 2, 4, 6];
-const minBreakTime = 7;
-const maxBreakTime = 8;
+// const cycle = [1500, 300, 1500, 300, 1500, 300, 1500, 900, 900];
+const cycle = [
+  { time: 1500, type: 'WORK', msg: '25分間、作業を行いましょう' },
+  { time: 300, type: 'BREAK', msg: '5分間の休憩を取りましょう' },
+  { time: 1500, type: 'WORK', msg: '25分間、作業を行いましょう' },
+  { time: 300, type: 'BREAK', msg: '5分間の休憩を取りましょう' },
+  { time: 1500, type: 'WORK', msg: '25分間、作業を行いましょう' },
+  { time: 300, type: 'BREAK', msg: '5分間の休憩を取りましょう' },
+  { time: 1500, type: 'WORK', msg: '25分間、作業を行いましょう' },
+  { time: 900, type: 'REST', msg: '15分から30分間の休憩に入りましょう' },
+  {
+    time: 900,
+    type: 'BUFFER_REST',
+    msg: '今から15分後までに作業を再開しましょう',
+  },
+];
+
 const aram = new Audio('../../tin2.mp3');
-const phaseType = ['WORK', 'BREAK', 'REST', 'BUFFER_REST', 'STOP'];
 
 const isNewNotificationSupported = () => {
   if (!window.Notification === !Notification.requestPermission()) return false;
@@ -26,9 +37,9 @@ const isNewNotificationSupported = () => {
 const useTimer = (): [number, () => void, () => void, () => void, string] => {
   const [timerId, setTimerId] = useState(0);
   const [cycleIndex, setCycleIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(cycle[cycleIndex]);
-  const [phase, setPhase] = useState(phaseType[4]);
+  const [timeLeft, setTimeLeft] = useState(cycle[cycleIndex].time);
   const [notificationSupportFlg, setNotificationSupportFlg] = useState(false);
+  const [cycleType, setCycleType] = useState('STOP');
 
   const refCycleIndex = useRef(cycleIndex);
 
@@ -39,6 +50,7 @@ const useTimer = (): [number, () => void, () => void, () => void, string] => {
     }
   };
 
+  // Notification setting
   useEffect(() => {
     if (window.Notification && Notification.permission === 'granted') {
       setNotificationSupportFlg(true);
@@ -49,6 +61,7 @@ const useTimer = (): [number, () => void, () => void, () => void, string] => {
     }
   }, []);
 
+  // cycle index seting
   useEffect(() => {
     refCycleIndex.current = cycleIndex;
   }, [cycleIndex]);
@@ -56,55 +69,39 @@ const useTimer = (): [number, () => void, () => void, () => void, string] => {
   const tick = () => {
     setTimeLeft(prevTime => {
       if (prevTime === 0) {
-        setCycleIndex(refCycleIndex.current + 1);
-
+        setCycleIndex((refCycleIndex.current + 1) % cycle.length);
         aram.play();
-        if (workTimes.includes((refCycleIndex.current + 1) % cycle.length)) {
-          showNotification('25分間、作業を行いましょう');
-          setPhase(phaseType[0]);
-        } else if (
-          minBreakTime ===
-          (refCycleIndex.current + 1) % cycle.length
-        ) {
-          showNotification('15分から30分間の休憩に入りましょう');
-          setPhase(phaseType[2]);
-        } else if (
-          maxBreakTime ===
-          (refCycleIndex.current + 1) % cycle.length
-        ) {
-          showNotification('今から15分後までに作業を再開しましょう');
-          setPhase(phaseType[3]);
-        } else {
-          showNotification('5分間の休憩を取りましょう');
-          setPhase(phaseType[1]);
-        }
+        showNotification(cycle[(refCycleIndex.current + 1) % cycle.length].msg);
+        setCycleType(cycle[(refCycleIndex.current + 1) % cycle.length].type);
 
-        return cycle[(refCycleIndex.current + 1) % cycle.length];
+        return cycle[(refCycleIndex.current + 1) % cycle.length].time;
       }
       document.title = `${`00${Math.floor((prevTime - 1) / 60)}`.slice(
         -2,
-      )}:${`00${(prevTime - 1) % 60}`.slice(-2)}`;
+      )}:${`00${(prevTime - 1) % 60}`.slice(-2)} \n [${
+        cycle[refCycleIndex.current % cycle.length].type
+      }]`;
 
       return prevTime - 1;
     });
   };
 
-  const reset = () => {
-    setTimeLeft(cycle[cycleIndex]);
-  };
-
   const start = () => {
+    setCycleType(cycle[cycleIndex].type);
     const id = setInterval(tick, 1000);
     if (typeof id === 'number') setTimerId(id);
-    setPhase(phaseType[0]);
+  };
+
+  const reset = () => {
+    setTimeLeft(cycle[cycleIndex].time);
   };
 
   const stop = () => {
     clearInterval(timerId);
-    setPhase(phaseType[4]);
+    setCycleType('STOP');
   };
 
-  return [timeLeft, reset, start, stop, phase];
+  return [timeLeft, reset, start, stop, cycleType];
 };
 
 const TimerContainer: FC = () => {
