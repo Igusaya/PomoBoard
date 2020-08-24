@@ -34,12 +34,22 @@ const isNewNotificationSupported = () => {
   return true;
 };
 
-const useTimer = (): [number, () => void, () => void, () => void, string] => {
+const useTimer = (): [
+  number,
+  () => void,
+  () => void,
+  () => void,
+  string,
+  boolean,
+  () => void,
+  () => void,
+] => {
   const [timerId, setTimerId] = useState(0);
   const [cycleIndex, setCycleIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(cycle[cycleIndex].time);
   const [notificationSupportFlg, setNotificationSupportFlg] = useState(false);
   const [cycleType, setCycleType] = useState('STOP');
+  const [open, SetOpen] = useState(false);
 
   const refCycleIndex = useRef(cycleIndex);
 
@@ -101,11 +111,37 @@ const useTimer = (): [number, () => void, () => void, () => void, string] => {
     setCycleType('STOP');
   };
 
-  return [timeLeft, reset, start, stop, cycleType];
+  const handleClickSetting = () => {
+    SetOpen(true);
+  };
+
+  const handleClose = () => {
+    SetOpen(false);
+  };
+
+  return [
+    timeLeft,
+    reset,
+    start,
+    stop,
+    cycleType,
+    open,
+    handleClose,
+    handleClickSetting,
+  ];
 };
 
 const TimerContainer: FC = () => {
-  const [timeLeft, reset, start, stop, phase] = useTimer();
+  const [
+    timeLeft,
+    reset,
+    start,
+    stop,
+    phase,
+    open,
+    handleClose,
+    handleClickSetting,
+  ] = useTimer();
 
   return (
     <TimerComponent
@@ -114,6 +150,9 @@ const TimerContainer: FC = () => {
       start={start}
       stop={stop}
       phase={phase}
+      open={open}
+      handleClose={handleClose}
+      handleClickSetting={handleClickSetting}
     />
   );
 };

@@ -11,13 +11,17 @@ import {
   IconButton,
 } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
+import SettingComponent from './Setting';
 
-interface TimerProps {
+export interface TimerProps {
   timeLeft: number;
   reset: () => void;
   start: () => void;
   stop: () => void;
   phase: string;
+  open: boolean;
+  handleClose: () => void;
+  handleClickSetting: () => void;
 }
 
 const useStyles = makeStyles({
@@ -33,16 +37,20 @@ const TimerComponent: FC<TimerProps> = ({
   start,
   stop,
   phase,
+  open,
+  handleClose,
+  handleClickSetting,
 }) => {
   const classes = useStyles();
 
   return (
     <>
+      <SettingComponent open={open} onClose={handleClose} />
       <div className="container">
         <Card className={classes.root}>
           <CardHeader
             action={
-              <IconButton aria-label="settings">
+              <IconButton onClick={handleClickSetting} aria-label="settings">
                 {' '}
                 <SettingsIcon />{' '}
               </IconButton>
