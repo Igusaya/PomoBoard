@@ -11,7 +11,7 @@ import {
   IconButton,
 } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
-import SettingComponent from './Setting';
+import Setting from '../containers/Setting';
 
 export interface TimerProps {
   timeLeft: number;
@@ -45,7 +45,7 @@ const TimerComponent: FC<TimerProps> = ({
 
   return (
     <>
-      <SettingComponent open={open} onClose={handleClose} />
+      <Setting open={open} onClose={handleClose} reset={reset} />
       <div className="container">
         <Card className={classes.root}>
           <CardHeader

@@ -18,6 +18,9 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 export interface SettingProps {
   open: boolean;
   onClose: () => void;
+  cycle: { time: number; type: string; msg: string }[];
+  submit: (cycle: { time: number; type: string; msg: string }[]) => void;
+  onReset: (cycleList: { time: number; type: string; msg: string }[]) => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -41,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const SettingComponent: FC<SettingProps> = (props: SettingProps) => {
-  const { onClose, open } = props;
+  const { onClose, open, cycle, submit, onReset } = props;
   const { register, handleSubmit, control, errors, reset } = useForm({});
   const classes = useStyles();
 
@@ -53,15 +56,20 @@ const SettingComponent: FC<SettingProps> = (props: SettingProps) => {
   useEffect(() => {
     // 初期値の設定
     reset({
-      test: [
-        { time: '25', type: 'WORK', msg: 'bbb' },
-        { time: '5', type: 'REST', msg: 'dddd' },
-      ],
+      test: cycle,
     });
-  }, [reset]);
+  }, [cycle, reset]);
 
-  const onSubmit = (data: any) => {
-    return console.log(data);
+  const onSubmit = (datas: any) => {
+    const list = datas.test.map(
+      (data: { time: string; type: string; msg: string }) => ({
+        time: parseInt(data.time, 10),
+        type: data.type,
+        msg: data.msg,
+      }),
+    );
+    submit(list);
+    onReset(list);
   };
 
   const handleClose = () => {

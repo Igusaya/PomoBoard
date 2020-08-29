@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 
 import './App.css';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core';
 import Timer from '../containers/Timer';
 
 const useStyles = makeStyles({

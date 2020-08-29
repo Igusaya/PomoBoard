@@ -1,23 +1,7 @@
 import React, { FC, useState, useRef, useEffect } from 'react';
+import { connect } from 'react-redux';
 
 import TimerComponent from '../components/Timer';
-
-// const cycle = [1500, 300, 1500, 300, 1500, 300, 1500, 900, 900];
-const cycle = [
-  { time: 1500, type: 'WORK', msg: '25分間、作業を行いましょう' },
-  { time: 300, type: 'BREAK', msg: '5分間の休憩を取りましょう' },
-  { time: 1500, type: 'WORK', msg: '25分間、作業を行いましょう' },
-  { time: 300, type: 'BREAK', msg: '5分間の休憩を取りましょう' },
-  { time: 1500, type: 'WORK', msg: '25分間、作業を行いましょう' },
-  { time: 300, type: 'BREAK', msg: '5分間の休憩を取りましょう' },
-  { time: 1500, type: 'WORK', msg: '25分間、作業を行いましょう' },
-  { time: 900, type: 'REST', msg: '15分から30分間の休憩に入りましょう' },
-  {
-    time: 900,
-    type: 'BUFFER_REST',
-    msg: '今から15分後までに作業を再開しましょう',
-  },
-];
 
 const aram = new Audio('../../tin2.mp3');
 
@@ -34,16 +18,13 @@ const isNewNotificationSupported = () => {
   return true;
 };
 
-const useTimer = (): [
-  number,
-  () => void,
-  () => void,
-  () => void,
-  string,
-  boolean,
-  () => void,
-  () => void,
-] => {
+export interface SettingState {
+  cycle: { time: number; type: string; msg: string }[];
+}
+
+const TimerContainer: FC<SettingState> = (props: SettingState) => {
+  const { cycle } = props;
+
   const [timerId, setTimerId] = useState(0);
   const [cycleIndex, setCycleIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(cycle[cycleIndex].time);
@@ -102,8 +83,17 @@ const useTimer = (): [
     if (typeof id === 'number') setTimerId(id);
   };
 
-  const reset = () => {
-    setTimeLeft(cycle[cycleIndex].time);
+  const reset = (
+    cycleList:
+      | { time: number; type: string; msg: string }[]
+      | undefined = undefined,
+  ) => {
+    if (cycleList === undefined || cycleList[cycleIndex] === undefined) {
+      setTimeLeft(cycle[cycleIndex].time);
+
+      return;
+    }
+    setTimeLeft(cycleList[cycleIndex].time);
   };
 
   const stop = () => {
@@ -119,37 +109,13 @@ const useTimer = (): [
     SetOpen(false);
   };
 
-  return [
-    timeLeft,
-    reset,
-    start,
-    stop,
-    cycleType,
-    open,
-    handleClose,
-    handleClickSetting,
-  ];
-};
-
-const TimerContainer: FC = () => {
-  const [
-    timeLeft,
-    reset,
-    start,
-    stop,
-    phase,
-    open,
-    handleClose,
-    handleClickSetting,
-  ] = useTimer();
-
   return (
     <TimerComponent
       timeLeft={timeLeft}
       reset={reset}
       start={start}
       stop={stop}
-      phase={phase}
+      phase={cycleType}
       open={open}
       handleClose={handleClose}
       handleClickSetting={handleClickSetting}
@@ -157,4 +123,8 @@ const TimerContainer: FC = () => {
   );
 };
 
-export default TimerContainer;
+const mapStateToProps = (state: SettingState) => ({
+  cycle: state.cycle,
+});
+
+export default connect(mapStateToProps)(TimerContainer);
