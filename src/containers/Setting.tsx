@@ -2,20 +2,20 @@ import React, { FC } from 'react';
 import { connect } from 'react-redux';
 
 import { Dispatch } from 'redux';
-import SettingComponent from '../components/Setting';
+import SettingComponent, { CycleType } from '../components/Setting';
 import { SettingState } from '../reducers/Setting';
 import { submit } from '../actions/Setting';
 
 export interface SettingProps {
   open: boolean;
   onClose: () => void;
-  cycle: { time: number; type: string; msg: string }[];
-  onSubmit: (cycle: { time: number; type: string; msg: string }[]) => void;
+  cycle: CycleType[];
+  onSubmit: (cycle: CycleType[]) => void;
   reset: () => void;
 }
 
 interface DispatchProps {
-  onSubmit: (cycle: { time: number; type: string; msg: string }[]) => void;
+  onSubmit: (cycle: CycleType[]) => void;
 }
 
 const SettingContatiner: FC<SettingProps> = (props: SettingProps) => {

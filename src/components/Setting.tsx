@@ -24,12 +24,18 @@ import { Delete, PlaylistAdd, Done } from '@material-ui/icons';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
+export interface CycleType {
+  time: number;
+  type: string;
+  msg: string;
+}
+
 export interface SettingProps {
   open: boolean;
   onClose: () => void;
-  cycle: { time: number; type: string; msg: string }[];
-  submit: (cycle: { time: number; type: string; msg: string }[]) => void;
-  onReset: (cycleList: { time: number; type: string; msg: string }[]) => void;
+  cycle: CycleType[];
+  submit: (cycle: CycleType[]) => void;
+  onReset: (cycleList: CycleType[]) => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -62,7 +68,6 @@ const SettingComponent: FC<SettingProps> = (props: SettingProps) => {
   const { onClose, open, cycle, submit, onReset } = props;
   const { register, handleSubmit, control, errors, reset } = useForm({});
   const classes = useStyles();
-
   const { fields, append, prepend, remove } = useFieldArray({
     control,
     name: 'test',
@@ -85,14 +90,11 @@ const SettingComponent: FC<SettingProps> = (props: SettingProps) => {
     );
     submit(list);
     onReset(list);
-  };
-
-  const handleClose = () => {
     onClose();
   };
 
   return (
-    <Dialog onClose={handleClose} aria-labelledby="setting-dialog" open={open}>
+    <Dialog onClose={onClose} aria-labelledby="setting-dialog" open={open}>
       <DialogTitle>Preferences</DialogTitle>
       <DialogContentText>サイクルの設定を行えます。</DialogContentText>
       <DialogActions>
