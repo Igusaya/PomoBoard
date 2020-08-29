@@ -17,7 +17,7 @@ export const initialState: SettingState = {
     { time: 900, type: 'REST', msg: '15分から30分間の休憩に入りましょう' },
     {
       time: 900,
-      type: 'BUFFER_REST',
+      type: 'REST',
       msg: '今から15分後までに作業を再開しましょう',
     },
   ],

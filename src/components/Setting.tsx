@@ -4,6 +4,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
+  DialogActions,
   TextField,
   Button,
   Select,
@@ -11,7 +12,15 @@ import {
   FormControl,
   InputLabel,
   FormHelperText,
+  TableContainer,
+  Table,
+  Paper,
+  TableRow,
+  TableCell,
+  TableBody,
+  IconButton,
 } from '@material-ui/core';
+import { Delete, PlaylistAdd, Done } from '@material-ui/icons';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
@@ -30,15 +39,21 @@ const useStyles = makeStyles((theme: Theme) =>
         margin: theme.spacing(1),
       },
     },
-    textField: {
-      width: '15%',
+    timeTextField: {
+      width: '3em',
+    },
+    typeTextField: {
+      width: '6em',
     },
     formControl: {
       margin: theme.spacing(1),
-      minWidth: 120,
+      minWidth: '7em',
     },
     selectEmpty: {
       marginTop: theme.spacing(2),
+    },
+    cell: {
+      padding: '1px',
     },
   }),
 );
@@ -63,7 +78,7 @@ const SettingComponent: FC<SettingProps> = (props: SettingProps) => {
   const onSubmit = (datas: any) => {
     const list = datas.test.map(
       (data: { time: string; type: string; msg: string }) => ({
-        time: parseInt(data.time, 10),
+        time: parseInt(data.time, 10) * 60,
         type: data.type,
         msg: data.msg,
       }),
@@ -77,108 +92,154 @@ const SettingComponent: FC<SettingProps> = (props: SettingProps) => {
   };
 
   return (
-    <Dialog
-      onClose={handleClose}
-      aria-labelledby="simple-dialog-title"
-      open={open}
-    >
+    <Dialog onClose={handleClose} aria-labelledby="setting-dialog" open={open}>
       <DialogTitle>Preferences</DialogTitle>
+      <DialogContentText>サイクルの設定を行えます。</DialogContentText>
+      <DialogActions>
+        <Button
+          onClick={() => prepend({})}
+          variant="outlined"
+          startIcon={<PlaylistAdd />}
+        >
+          prepend
+        </Button>
+      </DialogActions>
       <DialogContent>
-        <DialogContentText>
-          サイクルの設定を行えます。(未実装)
-        </DialogContentText>
-
         <form className={classes.root}>
-          <ul>
-            {fields.map((item, index) => (
-              <li key={item.id}>
-                <TextField
-                  name={`test[${index}].time`}
-                  label="time(min)"
-                  type="number"
-                  defaultValue={item.time}
-                  inputRef={register({ required: true })}
-                  error={Boolean(
-                    errors &&
-                      errors.test &&
-                      errors.test[index] &&
-                      errors.test[index].time,
-                  )}
-                  helperText={
-                    errors.test &&
-                    errors.test[index] &&
-                    errors.test[index].time &&
-                    'This field is required'
-                  }
-                  className={classes.textField}
-                />
+          <TableContainer component={Paper}>
+            <Table aria-label="setting-cycle">
+              <TableBody>
+                {fields.map((item, index) => (
+                  <TableRow key={item.id}>
+                    <TableCell
+                      align="center"
+                      scope="row"
+                      className={classes.cell}
+                    >
+                      <IconButton
+                        onClick={() => remove(index)}
+                        aria-label="delete"
+                      >
+                        <Delete fontSize="small" />
+                      </IconButton>
+                    </TableCell>
 
-                <FormControl
-                  className={classes.formControl}
-                  error={Boolean(
-                    errors.test &&
-                      errors.test[index] &&
-                      errors.test[index].type,
-                  )}
-                >
-                  <InputLabel id="type-select">Type</InputLabel>
-                  <Controller
-                    as={
-                      <Select>
-                        <MenuItem value="WORK">WORK</MenuItem>
-                        <MenuItem value="BREAK">BREAK</MenuItem>
-                        <MenuItem value="REST">REST</MenuItem>
-                        <MenuItem value="BUFFER_REST">BUFFER_REST</MenuItem>
-                      </Select>
-                    }
-                    name={`test[${index}].type`}
-                    rules={{ required: 'this is required!' }}
-                    control={control}
-                    defaultValue={item.type ? item.type : ''}
-                  />
-                  <FormHelperText>
-                    {errors.test &&
-                      errors.test[index] &&
-                      errors.test[index].type &&
-                      errors.test[index].type.message}
-                  </FormHelperText>
-                </FormControl>
+                    <TableCell
+                      align="right"
+                      scope="row"
+                      className={classes.cell}
+                    >
+                      <TextField
+                        name={`test[${index}].time`}
+                        label="time(min)"
+                        type="number"
+                        defaultValue={item.time && item.time / 60}
+                        inputRef={register({
+                          required: '必須',
+                          min: {
+                            value: 1,
+                            message: '１以上を入力してください。',
+                          },
+                        })}
+                        error={Boolean(
+                          errors &&
+                            errors.test &&
+                            errors.test[index] &&
+                            errors.test[index].time,
+                        )}
+                        helperText={
+                          errors.test &&
+                          errors.test[index] &&
+                          errors.test[index].time &&
+                          errors.test[index].time.message
+                        }
+                        className={classes.timeTextField}
+                      />
+                    </TableCell>
 
-                <TextField
-                  inputRef={register({ required: true })}
-                  label="msg"
-                  name={`test[${index}].msg`}
-                  defaultValue={item.msg}
-                  fullWidth
-                  error={Boolean(
-                    errors.test && errors.test[index] && errors.test[index].msg,
-                  )}
-                  helperText={
-                    errors.test &&
-                    errors.test[index] &&
-                    errors.test[index].msg &&
-                    'This field is required'
-                  }
-                />
+                    <TableCell
+                      align="right"
+                      scope="row"
+                      className={classes.cell}
+                    >
+                      <FormControl
+                        className={classes.formControl}
+                        error={Boolean(
+                          errors.test &&
+                            errors.test[index] &&
+                            errors.test[index].type,
+                        )}
+                      >
+                        <InputLabel id="type-select">Type</InputLabel>
+                        <Controller
+                          as={
+                            <Select>
+                              <MenuItem value="WORK">WORK</MenuItem>
+                              <MenuItem value="BREAK">BREAK</MenuItem>
+                              <MenuItem value="REST">REST</MenuItem>
+                            </Select>
+                          }
+                          name={`test[${index}].type`}
+                          rules={{ required: 'this is required!' }}
+                          control={control}
+                          defaultValue={item.type ? item.type : ''}
+                          className={classes.typeTextField}
+                        />
+                        <FormHelperText>
+                          {errors.test &&
+                            errors.test[index] &&
+                            errors.test[index].type &&
+                            errors.test[index].type.message}
+                        </FormHelperText>
+                      </FormControl>
+                    </TableCell>
 
-                <button type="button" onClick={() => remove(index)}>
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          <Button onClick={() => append({})} variant="contained">
-            append
-          </Button>
-          <Button onClick={() => prepend({})} variant="contained">
-            prepend
-          </Button>
-          <Button onClick={handleSubmit(onSubmit)} variant="contained">
-            Submit
-          </Button>
+                    <TableCell
+                      align="right"
+                      scope="row"
+                      className={classes.cell}
+                    >
+                      <TextField
+                        inputRef={register({ required: true })}
+                        label="msg"
+                        name={`test[${index}].msg`}
+                        defaultValue={item.msg}
+                        error={Boolean(
+                          errors.test &&
+                            errors.test[index] &&
+                            errors.test[index].msg,
+                        )}
+                        helperText={
+                          errors.test &&
+                          errors.test[index] &&
+                          errors.test[index].msg &&
+                          'This field is required'
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </form>
       </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => append({})}
+          variant="outlined"
+          startIcon={<PlaylistAdd />}
+        >
+          append
+        </Button>
+        <Button
+          onClick={handleSubmit(onSubmit)}
+          variant="outlined"
+          startIcon={<Done />}
+        >
+          Submit
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };
