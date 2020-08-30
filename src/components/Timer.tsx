@@ -46,39 +46,38 @@ const TimerComponent: FC<TimerProps> = ({
   return (
     <>
       <Setting open={open} onClose={handleClose} reset={reset} />
-      <div className="container">
-        <Card className={classes.root}>
-          <CardHeader
-            action={
-              <IconButton onClick={handleClickSetting} aria-label="settings">
-                {' '}
-                <SettingsIcon />{' '}
-              </IconButton>
-            }
-            title="Pomo Timer"
-            subheader={`phase:  ${phase}`}
-          />
-          <CardContent>
-            <Typography variant="h2" component="p" align="center">
-              {`00${Math.floor(timeLeft / 60)}`.slice(-2)}:
-              {`00${timeLeft % 60}`.slice(-2)}
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <ButtonGroup orientation="vertical" fullWidth>
-              <Button onClick={start} disabled={phase !== 'STOP'}>
-                Start
+
+      <Card className={classes.root}>
+        <CardHeader
+          action={
+            <IconButton onClick={handleClickSetting} aria-label="settings">
+              {' '}
+              <SettingsIcon />{' '}
+            </IconButton>
+          }
+          title="Pomo Timer"
+          subheader={`phase:  ${phase}`}
+        />
+        <CardContent>
+          <Typography variant="h2" component="p" align="center">
+            {`00${Math.floor(timeLeft / 60)}`.slice(-2)}:
+            {`00${timeLeft % 60}`.slice(-2)}
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <ButtonGroup orientation="vertical" fullWidth>
+            <Button onClick={start} disabled={phase !== 'STOP'}>
+              Start
+            </Button>
+            <ButtonGroup>
+              <Button onClick={stop} disabled={phase === 'STOP'}>
+                Stop
               </Button>
-              <ButtonGroup>
-                <Button onClick={stop} disabled={phase === 'STOP'}>
-                  Stop
-                </Button>
-                <Button onClick={reset}>Restart</Button>
-              </ButtonGroup>
+              <Button onClick={reset}>Restart</Button>
             </ButtonGroup>
-          </CardActions>
-        </Card>
-      </div>
+          </ButtonGroup>
+        </CardActions>
+      </Card>
     </>
   );
 };

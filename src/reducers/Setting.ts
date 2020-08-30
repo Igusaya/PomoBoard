@@ -15,11 +15,7 @@ export const initialState: SettingState = {
     { time: 300, type: 'BREAK', msg: '5分間の休憩を取りましょう' },
     { time: 1500, type: 'WORK', msg: '25分間、作業を行いましょう' },
     { time: 900, type: 'REST', msg: '15分から30分間の休憩に入りましょう' },
-    {
-      time: 900,
-      type: 'REST',
-      msg: '今から15分後までに作業を再開しましょう',
-    },
+    { time: 900, type: 'REST', msg: '今から15分後までに作業を再開しましょう' },
   ],
 };
 
