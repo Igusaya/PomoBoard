@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 
 import { Dispatch } from 'redux';
 import SettingComponent, { CycleType } from '../components/Setting';
-import { SettingState } from '../reducers/Setting';
 import { submit } from '../actions/Setting';
+import { State } from '../reducers';
 
 export interface SettingProps {
   open: boolean;
@@ -32,8 +32,8 @@ const SettingContatiner: FC<SettingProps> = (props: SettingProps) => {
   );
 };
 
-const mapStateToProps = (state: SettingState) => ({
-  cycle: state.cycle,
+const mapStateToProps = (state: State) => ({
+  cycle: state.setting.cycle,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
