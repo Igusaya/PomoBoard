@@ -72,7 +72,7 @@ const TimerContainer: FC<TimerProps> = ({ cycle, cycleIndex, setIndex }) => {
       document.title = `${`00${Math.floor((prevTime - 1) / 60)}`.slice(
         -2,
       )}:${`00${(prevTime - 1) % 60}`.slice(-2)} \n [${
-        cycle[cycleIndex % cycle.length].type
+        cycle[refCycleIndex.current % cycle.length].type
       }]`;
 
       return prevTime - 1;
@@ -101,6 +101,7 @@ const TimerContainer: FC<TimerProps> = ({ cycle, cycleIndex, setIndex }) => {
   const next = () => {
     setIndex((refCycleIndex.current + 1) % cycle.length);
     setTimeLeft(cycle[(cycleIndex + 1) % cycle.length].time);
+    setCycleType(cycle[(cycleIndex + 1) % cycle.length].type);
   };
 
   const stop = () => {
