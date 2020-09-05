@@ -98,6 +98,11 @@ const TimerContainer: FC<TimerProps> = ({ cycle, cycleIndex, setIndex }) => {
     setTimeLeft(cycleList[cycleIndex].time);
   };
 
+  const next = () => {
+    setIndex((refCycleIndex.current + 1) % cycle.length);
+    setTimeLeft(cycle[(cycleIndex + 1) % cycle.length].time);
+  };
+
   const stop = () => {
     clearInterval(timerId);
     setCycleType('STOP');
@@ -121,6 +126,7 @@ const TimerContainer: FC<TimerProps> = ({ cycle, cycleIndex, setIndex }) => {
       open={open}
       handleClose={handleClose}
       handleClickSetting={handleClickSetting}
+      next={next}
     />
   );
 };
@@ -131,6 +137,7 @@ const mapStateToProps = (state: State) => {
     cycleIndex: state.timer.index,
   };
 };
+
 interface DispatchProps {
   setIndex: (index: number) => void;
 }
