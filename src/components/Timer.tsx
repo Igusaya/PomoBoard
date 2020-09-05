@@ -22,6 +22,7 @@ export interface TimerProps {
   open: boolean;
   handleClose: () => void;
   handleClickSetting: () => void;
+  next: () => void;
 }
 
 const useStyles = makeStyles({
@@ -40,6 +41,7 @@ const TimerComponent: FC<TimerProps> = ({
   open,
   handleClose,
   handleClickSetting,
+  next,
 }) => {
   const classes = useStyles();
 
@@ -70,10 +72,13 @@ const TimerComponent: FC<TimerProps> = ({
               Start
             </Button>
             <ButtonGroup>
+              <Button onClick={reset}>Retry</Button>
+
               <Button onClick={stop} disabled={phase === 'STOP'}>
                 Stop
               </Button>
-              <Button onClick={reset}>Restart</Button>
+
+              <Button onClick={next}>Next</Button>
             </ButtonGroup>
           </ButtonGroup>
         </CardActions>
